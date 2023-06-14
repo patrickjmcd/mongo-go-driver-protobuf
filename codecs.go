@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/amsokol/mongo-go-driver-protobuf/pmongo"
+	"github.com/patrickjmcd/mongo-go-driver-protobuf/pmongo"
 )
 
 var (
