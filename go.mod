@@ -1,4 +1,4 @@
-module github.com/patrickjmcd/mongo-go-driver-protobuf
+module github.com/pepper-iot/mongo-go-driver-protobuf
 
 go 1.20
 
@@ -7,6 +7,7 @@ require (
 	github.com/amsokol/protoc-gen-gotag v0.2.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/protobuf v1.5.3
+	github.com/patrickjmcd/mongo-go-driver-protobuf v0.0.0-20230615150943-c39897b890c6
 	github.com/stretchr/testify v1.6.1
 	go.mongodb.org/mongo-driver v1.11.7
 	google.golang.org/protobuf v1.26.0
