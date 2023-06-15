@@ -1,6 +1,9 @@
 package codecs
 
 import (
+	"fmt"
+	"github.com/patrickjmcd/mongo-go-driver-protobuf/structpbbson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"reflect"
 	"time"
 
@@ -35,11 +38,13 @@ var (
 	// ObjectId type
 	objectIDType          = reflect.TypeOf(pmongo.ObjectId{})
 	objectIDPrimitiveType = reflect.TypeOf(primitive.ObjectID{})
+	objectIDPointerType   = reflect.TypeOf(&pmongo.ObjectId{})
 
 	// Codecs
-	wrapperValueCodecRef = &wrapperValueCodec{}
-	timestampCodecRef    = &timestampCodec{}
-	objectIDCodecRef     = &objectIDCodec{}
+	wrapperValueCodecRef    = &wrapperValueCodec{}
+	timestampCodecRef       = &timestampCodec{}
+	objectIDCodecRef        = &objectIDCodec{}
+	objectIDPointerCodecRef = &objectIDPointerCodec{}
 )
 
 // wrapperValueCodec is codec for Protobuf type wrappers
@@ -124,6 +129,7 @@ func (e *objectIDCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bsonrw.Valu
 // DecodeValue decodes BSON value to ObjectId value
 func (e *objectIDCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
 	enc, err := ectx.LookupDecoder(objectIDPrimitiveType)
+	fmt.Printf("enc: %v\n", enc)
 	if err != nil {
 		return err
 	}
@@ -132,6 +138,44 @@ func (e *objectIDCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.Valu
 		return err
 	}
 	oid := *pmongo.NewObjectId(id)
+	if err != nil {
+		return err
+	}
+	val.Set(reflect.ValueOf(oid))
+	return nil
+}
+
+// objectIDCodec is codec for Protobuf ObjectId
+type objectIDPointerCodec struct {
+}
+
+// EncodeValue encodes Protobuf ObjectId value to BSON value
+func (e *objectIDPointerCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
+	v := val.Interface().(pmongo.ObjectId)
+	// Create primitive.ObjectId from string
+	id, err := primitive.ObjectIDFromHex(v.Value)
+	if err != nil {
+		return err
+	}
+	enc, err := ectx.LookupEncoder(objectIDPrimitiveType)
+	if err != nil {
+		return err
+	}
+	return enc.EncodeValue(ectx, vw, reflect.ValueOf(id))
+}
+
+// DecodeValue decodes BSON value to ObjectId value
+func (e *objectIDPointerCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
+	enc, err := ectx.LookupDecoder(objectIDPrimitiveType)
+	fmt.Printf("enc: %v\n", enc)
+	if err != nil {
+		return err
+	}
+	var id primitive.ObjectID
+	if err = enc.DecodeValue(ectx, vr, reflect.ValueOf(&id).Elem()); err != nil {
+		return err
+	}
+	oid := pmongo.NewObjectId(id)
 	if err != nil {
 		return err
 	}
@@ -151,5 +195,11 @@ func Register(rb *bsoncodec.RegistryBuilder) *bsoncodec.RegistryBuilder {
 		RegisterCodec(uint32ValueType, wrapperValueCodecRef).
 		RegisterCodec(uint64ValueType, wrapperValueCodecRef).
 		RegisterCodec(timestampType, timestampCodecRef).
-		RegisterCodec(objectIDType, objectIDCodecRef)
+		RegisterCodec(objectIDType, objectIDCodecRef).
+		RegisterCodec(objectIDPointerType, objectIDPointerCodecRef).
+		RegisterTypeMapEntry(bsontype.ObjectID, objectIDType).
+		RegisterCodec(structpbbson.ProtoStructType, structpbbson.StructCodec{}).
+		RegisterCodec(structpbbson.ProtoValueType, structpbbson.ValueCodec{}).
+		RegisterCodec(structpbbson.ProtoListValueType, structpbbson.ListCodec{})
+
 }
