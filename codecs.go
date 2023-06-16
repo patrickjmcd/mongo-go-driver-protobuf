@@ -2,7 +2,7 @@ package codecs
 
 import (
 	"fmt"
-	"github.com/patrickjmcd/mongo-go-driver-protobuf/structpbbson"
+	"github.com/pepper-iot/mongo-go-driver-protobuf/structpbbson"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"reflect"
 	"time"
@@ -14,7 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
-	"github.com/patrickjmcd/mongo-go-driver-protobuf/pmongo"
+	"github.com/pepper-iot/mongo-go-driver-protobuf/pmongo"
 )
 
 var (
