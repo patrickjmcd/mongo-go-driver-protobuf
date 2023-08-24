@@ -2,10 +2,11 @@ package codecs
 
 import (
 	"fmt"
-	"github.com/pepper-iot/mongo-go-driver-protobuf/structpbbson"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"reflect"
 	"time"
+
+	"github.com/pepper-iot/mongo-go-driver-protobuf/structpbbson"
+	"go.mongodb.org/mongo-driver/bson/bsontype"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -48,8 +49,7 @@ var (
 )
 
 // wrapperValueCodec is codec for Protobuf type wrappers
-type wrapperValueCodec struct {
-}
+type wrapperValueCodec struct{}
 
 // EncodeValue encodes Protobuf type wrapper value to BSON value
 func (e *wrapperValueCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
@@ -72,8 +72,7 @@ func (e *wrapperValueCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.
 }
 
 // timestampCodec is codec for Protobuf Timestamp
-type timestampCodec struct {
-}
+type timestampCodec struct{}
 
 // EncodeValue encodes Protobuf Timestamp value to BSON value
 func (e *timestampCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
@@ -108,8 +107,7 @@ func (e *timestampCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.Val
 }
 
 // objectIDCodec is codec for Protobuf ObjectId
-type objectIDCodec struct {
-}
+type objectIDCodec struct{}
 
 // EncodeValue encodes Protobuf ObjectId value to BSON value
 func (e *objectIDCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
@@ -146,12 +144,11 @@ func (e *objectIDCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.Valu
 }
 
 // objectIDCodec is codec for Protobuf ObjectId
-type objectIDPointerCodec struct {
-}
+type objectIDPointerCodec struct{}
 
 // EncodeValue encodes Protobuf ObjectId value to BSON value
 func (e *objectIDPointerCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bsonrw.ValueWriter, val reflect.Value) error {
-	v := val.Interface().(pmongo.ObjectId)
+	v := val.Interface().(*pmongo.ObjectId)
 	// Create primitive.ObjectId from string
 	id, err := primitive.ObjectIDFromHex(v.Value)
 	if err != nil {
@@ -201,5 +198,4 @@ func Register(rb *bsoncodec.RegistryBuilder) *bsoncodec.RegistryBuilder {
 		RegisterCodec(structpbbson.ProtoStructType, structpbbson.StructCodec{}).
 		RegisterCodec(structpbbson.ProtoValueType, structpbbson.ValueCodec{}).
 		RegisterCodec(structpbbson.ProtoListValueType, structpbbson.ListCodec{})
-
 }
