@@ -1,7 +1,6 @@
 package codecs
 
 import (
-	"fmt"
 	"reflect"
 	"time"
 
@@ -127,7 +126,6 @@ func (e *objectIDCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bsonrw.Valu
 // DecodeValue decodes BSON value to ObjectId value
 func (e *objectIDCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
 	enc, err := ectx.LookupDecoder(objectIDPrimitiveType)
-	fmt.Printf("enc: %v\n", enc)
 	if err != nil {
 		return err
 	}
@@ -164,7 +162,6 @@ func (e *objectIDPointerCodec) EncodeValue(ectx bsoncodec.EncodeContext, vw bson
 // DecodeValue decodes BSON value to ObjectId value
 func (e *objectIDPointerCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bsonrw.ValueReader, val reflect.Value) error {
 	enc, err := ectx.LookupDecoder(objectIDPrimitiveType)
-	fmt.Printf("enc: %v\n", enc)
 	if err != nil {
 		return err
 	}
