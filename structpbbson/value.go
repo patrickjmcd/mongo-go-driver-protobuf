@@ -2,6 +2,7 @@ package structpbbson
 
 import (
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
@@ -48,53 +49,55 @@ func (c ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReade
 
 	kindField := val.FieldByName("Kind") // the 'Kind' field
 
+	fmt.Printf("vr.Type(): %v\n", vr.Type())
+
 	switch vr.Type() {
-	case bsontype.Null:
+	case bson.TypeNull:
 		kindField.Set(reflect.ValueOf(&structpb.Value_NullValue{}))
 		return vr.ReadNull()
-	case bsontype.Undefined:
+	case bson.TypeUndefined:
 		kindField.Set(reflect.ValueOf(&structpb.Value_NullValue{}))
 		return vr.ReadUndefined()
 	case bsontype.Type(0):
 		kindField.Set(reflect.ValueOf(&structpb.Value_NullValue{}))
 		return nil
-	case bsontype.EmbeddedDocument:
+	case bson.TypeEmbeddedDocument:
 		value := &structpb.Value_StructValue{StructValue: &structpb.Struct{}}
 		if err := DefaultStructCodec.DecodeValue(dc, vr, reflect.ValueOf(value.StructValue).Elem()); err != nil {
 			return err
 		}
 		kindField.Set(reflect.ValueOf(value))
-	case bsontype.Array:
+	case bson.TypeArray:
 		list := &structpb.Value_ListValue{ListValue: &structpb.ListValue{}}
 		if err := DefaultListCodec.DecodeValue(dc, vr, reflect.ValueOf(list.ListValue).Elem()); err != nil {
 			return err
 		}
 		kindField.Set(reflect.ValueOf(list))
-	case bsontype.Double:
+	case bson.TypeDouble:
 		v, err := vr.ReadDouble()
 		if err != nil {
 			return err
 		}
 		kindField.Set(reflect.ValueOf(&structpb.Value_NumberValue{NumberValue: v}))
-	case bsontype.Int32:
+	case bson.TypeInt32:
 		v, err := vr.ReadInt32()
 		if err != nil {
 			return err
 		}
 		kindField.Set(reflect.ValueOf(&structpb.Value_NumberValue{NumberValue: float64(v)}))
-	case bsontype.Int64:
+	case bson.TypeInt64:
 		v, err := vr.ReadInt64()
 		if err != nil {
 			return err
 		}
 		kindField.Set(reflect.ValueOf(&structpb.Value_NumberValue{NumberValue: float64(v)}))
-	case bsontype.String:
+	case bson.TypeString:
 		v, err := vr.ReadString()
 		if err != nil {
 			return err
 		}
 		kindField.Set(reflect.ValueOf(&structpb.Value_StringValue{StringValue: v}))
-	case bsontype.Boolean:
+	case bson.TypeBoolean:
 		v, err := vr.ReadBoolean()
 		if err != nil {
 			return err
