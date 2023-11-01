@@ -2,9 +2,10 @@ package codecs
 
 import (
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
 	"reflect"
 	"time"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -228,24 +229,3 @@ func RegisterRegistry(rb *bsoncodec.Registry) *bsoncodec.Registry {
 	return rb
 
 }
-
-//// Register registers Google protocol buffers types codecs
-//func Register(rb *bsoncodec.RegistryBuilder) *bsoncodec.RegistryBuilder {
-//	return rb.RegisterCodec(boolValueType, wrapperValueCodecRef).
-//		RegisterCodec(bytesValueType, wrapperValueCodecRef).
-//		RegisterCodec(doubleValueType, wrapperValueCodecRef).
-//		RegisterCodec(floatValueType, wrapperValueCodecRef).
-//		RegisterCodec(int32ValueType, wrapperValueCodecRef).
-//		RegisterCodec(int64ValueType, wrapperValueCodecRef).
-//		RegisterCodec(stringValueType, wrapperValueCodecRef).
-//		RegisterCodec(uint32ValueType, wrapperValueCodecRef).
-//		RegisterCodec(uint64ValueType, wrapperValueCodecRef).
-//		RegisterCodec(timestampType, timestampCodecRef).
-//		RegisterCodec(objectIDType, objectIDCodecRef).
-//		RegisterCodec(objectIDPointerType, objectIDPointerCodecRef).
-//		RegisterTypeMapEntry(bsontype.ObjectID, objectIDType).
-//		RegisterCodec(structpbbson.ProtoStructType, structpbbson.StructCodec{}).
-//		RegisterCodec(structpbbson.ProtoValueType, structpbbson.ValueCodec{}).
-//		RegisterCodec(structpbbson.ProtoListValueType, structpbbson.ListCodec{}).
-//		RegisterCodec(structpbbson.ProtoValueNullType, structpbbson.ValueCodec{})
-//}

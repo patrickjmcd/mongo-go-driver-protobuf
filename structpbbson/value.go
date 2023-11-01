@@ -2,12 +2,13 @@ package structpbbson
 
 import (
 	"fmt"
+	"reflect"
+
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"google.golang.org/protobuf/types/known/structpb"
-	"reflect"
 )
 
 var DefaultValueCodec = ValueCodec{}
@@ -48,8 +49,6 @@ func (c ValueCodec) DecodeValue(dc bsoncodec.DecodeContext, vr bsonrw.ValueReade
 	}
 
 	kindField := val.FieldByName("Kind") // the 'Kind' field
-
-	fmt.Printf("vr.Type(): %v\n", vr.Type())
 
 	switch vr.Type() {
 	case bson.TypeNull:
