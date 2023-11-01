@@ -1,7 +1,6 @@
 package codecs
 
 import (
-	"fmt"
 	"reflect"
 	"time"
 
@@ -223,8 +222,6 @@ func RegisterRegistry(rb *bsoncodec.Registry) *bsoncodec.Registry {
 	rb.RegisterTypeEncoder(structpbbson.ProtoValueNullType, structpbbson.ValueCodec{})
 	rb.RegisterTypeEncoder(nullValueType, structpbbson.ValueCodec{})
 	rb.RegisterTypeEncoder(undefinedValueType, structpbbson.ValueCodec{})
-
-	fmt.Println("Registered custom codecs from mongo-go-driver-protobuf")
 
 	return rb
 
