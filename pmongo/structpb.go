@@ -5,7 +5,7 @@ import structpb "google.golang.org/protobuf/types/known/structpb"
 func InterfaceFromStructpb(s *structpb.Value) interface{} {
 	switch v := s.Kind.(type) {
 	case *structpb.Value_NullValue:
-		return nil
+		return v.NullValue.Number()
 	case *structpb.Value_NumberValue:
 		return v.NumberValue
 	case *structpb.Value_StringValue:

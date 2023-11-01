@@ -4,12 +4,12 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/pepper-iot/mongo-go-driver-protobuf/structpbbson"
-	"go.mongodb.org/mongo-driver/bson/bsontype"
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/pepper-iot/mongo-go-driver-protobuf/structpbbson"
 	"go.mongodb.org/mongo-driver/bson/bsoncodec"
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,15 +19,17 @@ import (
 
 var (
 	// Protobuf wrappers types
-	boolValueType   = reflect.TypeOf(wrappers.BoolValue{})
-	bytesValueType  = reflect.TypeOf(wrappers.BytesValue{})
-	doubleValueType = reflect.TypeOf(wrappers.DoubleValue{})
-	floatValueType  = reflect.TypeOf(wrappers.FloatValue{})
-	int32ValueType  = reflect.TypeOf(wrappers.Int32Value{})
-	int64ValueType  = reflect.TypeOf(wrappers.Int64Value{})
-	stringValueType = reflect.TypeOf(wrappers.StringValue{})
-	uint32ValueType = reflect.TypeOf(wrappers.UInt32Value{})
-	uint64ValueType = reflect.TypeOf(wrappers.UInt64Value{})
+	boolValueType      = reflect.TypeOf(wrappers.BoolValue{})
+	bytesValueType     = reflect.TypeOf(wrappers.BytesValue{})
+	doubleValueType    = reflect.TypeOf(wrappers.DoubleValue{})
+	floatValueType     = reflect.TypeOf(wrappers.FloatValue{})
+	int32ValueType     = reflect.TypeOf(wrappers.Int32Value{})
+	int64ValueType     = reflect.TypeOf(wrappers.Int64Value{})
+	stringValueType    = reflect.TypeOf(wrappers.StringValue{})
+	uint32ValueType    = reflect.TypeOf(wrappers.UInt32Value{})
+	uint64ValueType    = reflect.TypeOf(wrappers.UInt64Value{})
+	nullValueType      = reflect.TypeOf(bson.TypeNull)
+	undefinedValueType = reflect.TypeOf(bson.TypeUndefined)
 
 	// Protobuf Timestamp type
 	timestampType = reflect.TypeOf(timestamp.Timestamp{})
@@ -177,22 +179,50 @@ func (e *objectIDPointerCodec) DecodeValue(ectx bsoncodec.DecodeContext, vr bson
 	return nil
 }
 
-// Register registers Google protocol buffers types codecs
-func Register(rb *bsoncodec.RegistryBuilder) *bsoncodec.RegistryBuilder {
-	return rb.RegisterCodec(boolValueType, wrapperValueCodecRef).
-		RegisterCodec(bytesValueType, wrapperValueCodecRef).
-		RegisterCodec(doubleValueType, wrapperValueCodecRef).
-		RegisterCodec(floatValueType, wrapperValueCodecRef).
-		RegisterCodec(int32ValueType, wrapperValueCodecRef).
-		RegisterCodec(int64ValueType, wrapperValueCodecRef).
-		RegisterCodec(stringValueType, wrapperValueCodecRef).
-		RegisterCodec(uint32ValueType, wrapperValueCodecRef).
-		RegisterCodec(uint64ValueType, wrapperValueCodecRef).
-		RegisterCodec(timestampType, timestampCodecRef).
-		RegisterCodec(objectIDType, objectIDCodecRef).
-		RegisterCodec(objectIDPointerType, objectIDPointerCodecRef).
-		RegisterTypeMapEntry(bsontype.ObjectID, objectIDType).
-		RegisterCodec(structpbbson.ProtoStructType, structpbbson.StructCodec{}).
-		RegisterCodec(structpbbson.ProtoValueType, structpbbson.ValueCodec{}).
-		RegisterCodec(structpbbson.ProtoListValueType, structpbbson.ListCodec{})
+func RegisterRegistry(rb *bsoncodec.Registry) *bsoncodec.Registry {
+	// Types
+	rb.RegisterTypeMapEntry(bson.TypeObjectID, objectIDType)
+
+	// Decoders
+	rb.RegisterTypeDecoder(boolValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(bytesValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(doubleValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(floatValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(int32ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(int64ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(stringValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(uint32ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(uint64ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeDecoder(timestampType, timestampCodecRef)
+	rb.RegisterTypeDecoder(objectIDType, objectIDCodecRef)
+	rb.RegisterTypeDecoder(objectIDPointerType, objectIDPointerCodecRef)
+	rb.RegisterTypeDecoder(structpbbson.ProtoStructType, structpbbson.StructCodec{})
+	rb.RegisterTypeDecoder(structpbbson.ProtoValueType, structpbbson.ValueCodec{})
+	rb.RegisterTypeDecoder(structpbbson.ProtoListValueType, structpbbson.ListCodec{})
+	rb.RegisterTypeDecoder(structpbbson.ProtoValueNullType, structpbbson.ValueCodec{})
+	rb.RegisterTypeDecoder(nullValueType, structpbbson.ValueCodec{})
+	rb.RegisterTypeDecoder(undefinedValueType, structpbbson.ValueCodec{})
+
+	// Encoders
+	rb.RegisterTypeEncoder(boolValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(bytesValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(doubleValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(floatValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(int32ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(int64ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(stringValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(uint32ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(uint64ValueType, wrapperValueCodecRef)
+	rb.RegisterTypeEncoder(timestampType, timestampCodecRef)
+	rb.RegisterTypeEncoder(objectIDType, objectIDCodecRef)
+	rb.RegisterTypeEncoder(objectIDPointerType, objectIDPointerCodecRef)
+	rb.RegisterTypeEncoder(structpbbson.ProtoStructType, structpbbson.StructCodec{})
+	rb.RegisterTypeEncoder(structpbbson.ProtoValueType, structpbbson.ValueCodec{})
+	rb.RegisterTypeEncoder(structpbbson.ProtoListValueType, structpbbson.ListCodec{})
+	rb.RegisterTypeEncoder(structpbbson.ProtoValueNullType, structpbbson.ValueCodec{})
+	rb.RegisterTypeEncoder(nullValueType, structpbbson.ValueCodec{})
+	rb.RegisterTypeEncoder(undefinedValueType, structpbbson.ValueCodec{})
+
+	return rb
+
 }
